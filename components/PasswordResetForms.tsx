@@ -76,7 +76,14 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <h1>Choose new password</h1>
       <label className="field">
         <span>New password</span>
-        <input name="password" type="password" minLength={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}" required />
+        <input
+          name="password"
+          type="password"
+          minLength={8}
+          pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}"
+          title="Use at least 8 characters with uppercase, lowercase, and a number."
+          required
+        />
         {errors.password && <p className="error-text">{errors.password}</p>}
       </label>
       <label className="field">

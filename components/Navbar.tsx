@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LayoutDashboard, LogIn, LogOut, Menu, PackagePlus, Search, ShieldCheck, UserPlus, X } from "lucide-react";
 import { useState } from "react";
+import { BrandLogo } from "@/components/BrandLogo";
 import type { PublicUser } from "@/lib/types";
 
 export function Navbar({ user }: { user: PublicUser | null }) {
@@ -26,8 +27,7 @@ export function Navbar({ user }: { user: PublicUser | null }) {
   return (
     <header className="site-header">
       <Link className="brand" href="/" aria-label="Fast Lost and Found home">
-        <span className="brand-mark">F</span>
-        <span>Fast Lost & Found</span>
+        <BrandLogo />
       </Link>
 
       <button className="icon-button mobile-menu" onClick={() => setOpen((value) => !value)} aria-label="Toggle navigation">
@@ -47,6 +47,25 @@ export function Navbar({ user }: { user: PublicUser | null }) {
             Admin
           </Link>
         )}
+        <span className="mobile-auth-links">
+          {user ? (
+            <button className="ghost-button" onClick={logout}>
+              <LogOut size={17} />
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link className="ghost-button" href="/login" onClick={() => setOpen(false)}>
+                <LogIn size={17} />
+                Login
+              </Link>
+              <Link className="primary-button compact" href="/signup" onClick={() => setOpen(false)}>
+                <UserPlus size={17} />
+                Signup
+              </Link>
+            </>
+          )}
+        </span>
       </nav>
 
       <div className="auth-actions">

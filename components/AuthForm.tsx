@@ -17,7 +17,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setErrors({});
     const form = new FormData(event.currentTarget);
     const payload = Object.fromEntries(form.entries());
-    payload.remember = form.get("remember") === "on" ? "true" : "";
 
     const response = await fetch(`/api/auth/${mode}`, {
       method: "POST",
@@ -53,7 +52,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
       </label>
       <label className="field">
         <span>Password</span>
-        <input name="password" type="password" minLength={8} pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}" required />
+        <input
+          name="password"
+          type="password"
+          minLength={8}
+          pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}"
+          title="Use at least 8 characters with uppercase, lowercase, and a number."
+          required
+        />
         {errors.password && <p className="error-text">{errors.password}</p>}
       </label>
       {mode === "login" && (

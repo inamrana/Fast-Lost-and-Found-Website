@@ -1,18 +1,32 @@
 import { promises as fs } from "fs";
+import { MongoClient } from "mongodb";
 import path from "path";
 import type { Database } from "./types";
 import { hashPassword, randomId } from "./security";
 
 const DB_KEY = "fast-lost-found:db";
 const LOCAL_DB_PATH = path.join(process.cwd(), "data", "db.json");
+const MONGO_DOC_ID = "main";
 
 declare global {
   // eslint-disable-next-line no-var
   var __FAST_FOUND_DB: Database | undefined;
+  // eslint-disable-next-line no-var
+  var __FAST_FOUND_MONGO: Promise<MongoClient> | undefined;
+}
+
+function hasMongo() {
+  return Boolean(process.env.MONGODB_URI);
 }
 
 function hasKv() {
   return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+}
+
+async function getMongoCollection() {
+  globalThis.__FAST_FOUND_MONGO ??= new MongoClient(process.env.MONGODB_URI!).connect();
+  const client = await globalThis.__FAST_FOUND_MONGO;
+  return client.db(process.env.MONGODB_DB || "fast_lost_found").collection<{ _id: string; data: Database }>("app_state");
 }
 
 async function kvCommand(command: unknown[]) {
@@ -101,6 +115,15 @@ async function createSeedDb(): Promise<Database> {
 }
 
 export async function getDb(): Promise<Database> {
+  if (hasMongo()) {
+    const collection = await getMongoCollection();
+    const doc = await collection.findOne({ _id: MONGO_DOC_ID });
+    if (doc?.data) return doc.data;
+    const seed = await createSeedDb();
+    await saveDb(seed);
+    return seed;
+  }
+
   if (hasKv()) {
     const { result } = await kvCommand(["GET", DB_KEY]);
     if (typeof result === "string") return JSON.parse(result) as Database;
@@ -125,6 +148,12 @@ export async function getDb(): Promise<Database> {
 }
 
 export async function saveDb(db: Database) {
+  if (hasMongo()) {
+    const collection = await getMongoCollection();
+    await collection.updateOne({ _id: MONGO_DOC_ID }, { $set: { data: db } }, { upsert: true });
+    return;
+  }
+
   if (hasKv()) {
     await kvCommand(["SET", DB_KEY, JSON.stringify(db)]);
     return;
