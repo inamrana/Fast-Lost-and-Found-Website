@@ -8,8 +8,8 @@ export default function ContactPage() {
       <div className="report-layout">
         <section className="panel form-stack">
           <h2 className="section-title">Project desk</h2>
-          <p><strong>Email:</strong> fastfound@example.com</p>
-          <p><strong>Phone:</strong> +92 300 0000000</p>
+          <p><strong>Email:</strong> fastfound@gmail.com</p>
+          <p><strong>Phone:</strong> +92 304 0192075</p>
           <p><strong>Address:</strong> Campus Help Desk, Main Block</p>
         </section>
         <section className="panel">

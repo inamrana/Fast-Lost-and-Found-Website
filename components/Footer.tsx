@@ -8,7 +8,7 @@ export function Footer() {
         <p>Smart item recovery for campus, offices, and public spaces.</p>
       </div>
       <div className="footer-links">
-        <Link href="/contact">fastfound@example.com</Link>
+        <Link href="/contact">fastfound@gmail.com</Link>
         <Link href="https://github.com/" target="_blank">GitHub</Link>
         <Link href="https://vercel.com/" target="_blank">Vercel</Link>
       </div>
